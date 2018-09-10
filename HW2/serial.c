@@ -66,10 +66,11 @@ void file_results(double *forces, int np) {
     printf("Error creating or opening file");
     exit(1);
   }
+  printf("writing results\n");
   for (i; i < np; i++){
     fprintf(fptr, "force %d\nx = %f\ny = %f\nz = %f\n\n", i, forces[3*i], forces[3*i +1], forces[3*i +2]);
   }
-
+  printf("done\n\n\n");
   fclose(fptr);
 }
 

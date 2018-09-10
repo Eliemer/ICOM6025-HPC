@@ -21,10 +21,7 @@ void force_repulsion(int np, const double *pos, double L, double krepulsion, dou
   // loop over all pairs
   // redistribution and collapse of for loops
   #pragma omp parallel private(i,j,k,rvec,s2,s,f)
-
-  #pragma omp master
-  printf("number of cores: %d\n", omp_get_num_threads());
-
+  {
   #pragma omp for
   for(k = 0; k < (np * (np -1))/2; k++)
   {  //np: number of particles
@@ -65,6 +62,7 @@ void force_repulsion(int np, const double *pos, double L, double krepulsion, dou
     }
   }
 }
+}
 
 void file_results(double *forces, int np) {
   int i = 0;
@@ -80,7 +78,7 @@ void file_results(double *forces, int np) {
   for (i; i < np; i++){
     fprintf(fptr, "force %d\nx = %f\ny = %f\nz = %f\n\n", i, forces[3*i], forces[3*i +1], forces[3*i +2]);
   }
-  printf("done\n");
+  printf("done\n\n\n");
   fclose(fptr);
 }
 
