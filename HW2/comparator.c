@@ -52,7 +52,7 @@ int main()
     fclose(fPtr1);
     fclose(fPtr2);
 
-    return 0;
+    return diff;
 }
 
 
