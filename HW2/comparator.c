@@ -39,7 +39,7 @@ int main()
 
     if (diff == 0)
     {
-        printf("\nBoth files are equal.\n");
+        printf("Both files are equal.\n");
     }
     else
     {
