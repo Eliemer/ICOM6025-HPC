@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
-#include <omp.h>
 
 double get_walltime()
 {
@@ -13,56 +12,39 @@ double get_walltime()
 
 void force_repulsion(int np, const double *pos, double L, double krepulsion, double *forces)
 {
-
-  int i, j, k;
+  //np: number of particles
+  //*pos:
+  int i, j;
   double rvec [4];
   double s2, s, f;
 
   // loop over all pairs
-  // redistribution and collapse of for loops
-  // #pragma omp parallel for private(i,j,k,rvec,s2,s,f) shared(forces) schedule(static)
-
-  // unrolling nested for loops with parametrized index K
-  // only works for values of np smaller the integer.MAX
-  for(k = 0; k < (np * (np -1))/2; k++)
-  {  //np: number of particles
-  //*pos:
-    // calculate equivalent i,j indexes
-    i = k/np;
-    j = k%np;
-
-    // convert data dependency between indexes
-    if(j<=i)
+  #pragma omp parallel for private(s, s2, f, i, j, rvec) schedule(guided)
+  for (i=0; i<np; i++)
+  {
+    for (j=i+1; j<np; j++)
     {
-      i = np - i - 2;
-      j = np - j - 1;
-    }
-
-    // compute minimum image difference
-    rvec[0] = remainder(pos[3*i ] - pos[3*j ], L);
-    rvec[1] = remainder(pos[3*i+1] - pos[3*j+1], L);
-    rvec[2] = remainder(pos[3*i+2] - pos[3*j+2], L);
-
-    s2 = (rvec [0]* rvec [0]) + (rvec [1]* rvec [1]) + (rvec [2]* rvec [2]);
-
-    if (s2 < 4)
-    {
-      s = sqrt(s2);
-      rvec[0] /= s;
-      rvec[1] /= s;
-      rvec[2] /= s;
-      f = krepulsion*(2.-s);
-      //possible section A
-
-
-      forces[3*i ] += f*rvec[0];
-      forces[3*i+1] += f*rvec[1];
-      forces[3*i+2] += f*rvec[2];
-      //section B
-      forces[3*j ] += -f*rvec[0];
-      forces[3*j+1] += -f*rvec[1];
-      forces[3*j+2] += -f*rvec[2];
-
+      // compute minimum image difference
+      rvec[0] = remainder(pos[3*i ] - pos[3*j ], L);
+      rvec[1] = remainder(pos[3*i+1] - pos[3*j+1], L);
+      rvec[2] = remainder(pos[3*i+2] - pos[3*j+2], L);
+      s2 = rvec [0]* rvec [0] + rvec [1]* rvec [1] + rvec [2]* rvec [2];
+      if (s2 < 4)
+      {
+        s = sqrt(s2);
+        rvec[0] /= s;
+        rvec[1] /= s;
+        rvec[2] /= s;
+        f = krepulsion*(2.-s);
+        //possible section A
+        forces[3*i ] += f*rvec[0];
+        forces[3*i+1] += f*rvec[1];
+        forces[3*i+2] += f*rvec[2];
+        //section B
+        forces[3*j ] += -f*rvec[0];
+        forces[3*j+1] += -f*rvec[1];
+        forces[3*j+2] += -f*rvec[2];
+      }
     }
   }
 }
@@ -103,7 +85,6 @@ int main(int argc, char *argv[]) {
   // generate random particle positions inside simulation box
   forces = (double *) malloc(3*np*sizeof(double));
   pos = (double *) malloc(3*np*sizeof(double));
-
   for (i=0; i<3*np; i++)
     pos[i] = rand()/(double)RAND_MAX*L;
     forces[i] = 0.;

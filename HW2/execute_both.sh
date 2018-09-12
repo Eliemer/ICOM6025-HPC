@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gcc parallel.c -o parallel -fopenmp -lm
+gcc parallel2.c -o parallel -fopenmp -lm
 gcc serial.c -o serial -lm
 gcc comparator.c -o comparator
 
