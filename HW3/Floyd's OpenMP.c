@@ -104,14 +104,24 @@ void floyd(int n, int **G)
       }
     }
 
+
+
+
     for(k=0;k<n;k++)
-      #pragma omp parallel for private (i,j)
+    {
+      #pragma omp parallel for private (i)
       for(i=0;i<n;i++)
+      {
+        #pragma omp parallel for private(j) shared(i)
         for(j=0;j<n;j++)
+        {
           if(distance[i][k] + distance[k][j] < distance[i][j])
+          {
             distance[i][j] = distance[i][k] + distance[k][j];
-
-
+          }
+        }
+      }
+    }
     if (n < 15)
       printSolution(n, distance);
 }
