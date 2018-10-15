@@ -8,7 +8,7 @@
 void floyd(int n, int **G);
 void gen_adj_matrix(int n, int **G);
 void printSolution(int n, int **D);
-void file_results(double comp_time, int np);
+void file_results(double comp_time, int num_threads, int np);
 
 double get_walltime()
 {
@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 {
     int i,j,n,u;
     double time0, time1;
+    int num_threads;
 
-    omp_set_num_threads(omp_get_max_threads());
     srand(get_walltime());
 
     if (argc > 1){
@@ -30,6 +30,12 @@ int main(int argc, char *argv[])
     } else {
       printf("Enter no. of vertices:");
       scanf("%d",&n);
+    }
+
+    #pragma omp parallel{
+      #pragma omp master{
+        num_threads = omp_get_num_threads();
+      }
     }
 
     int **G = (int**)malloc(sizeof(int*)*n);

@@ -7,7 +7,7 @@
 
 void dijkstra(int n, int **G,int startnode);
 void gen_adj_matrix(int n, int **G);
-void file_results(double comp_time, int np);
+void file_results(double comp_time, int num_threads,int np);
 
 double get_walltime()
 {
@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 {
     int i,j,n,u = -1;
     double time0, time1;
+    int num_threads;
 
     srand(get_walltime());
 
@@ -28,6 +29,12 @@ int main(int argc, char *argv[])
     } else {
       printf("Enter no. of vertices:");
       scanf("%d",&n);
+    }
+
+    #pragma omp parallel{
+      #pragma omp master{
+        num_threads = omp_get_num_threads();
+      }
     }
 
     int **G = (int**)malloc(sizeof(int*)*n);
@@ -62,7 +69,7 @@ int main(int argc, char *argv[])
     free(G);
 
     printf("\n\ntime elapsed:  %f\n", time1 - time0);
-    file_results(time1 - time0, n);
+    file_results(time1 - time0, num_threads,n);
 
     return 0;
 }
@@ -182,14 +189,9 @@ void dijkstra(int n, int **G, int startnode)
     free(visited);
 }
 
-void file_results(double comp_time, int np) {
+void file_results(double comp_time, int num_threads, int np) {
   int i = 0;
-  int thread_num = 1;
-  if (omp_get_num_threads() > 1){
-    thread_num = omp_get_num_threads();
-  }
-  printf("%d\n", omp_get_num_threads());
-  printf("%d\n", omp_get_max_threads());
+
   FILE *fptr;
   char filename[] = {"dijkstra_results"};
   fptr = fopen(filename, "w+");
@@ -200,7 +202,7 @@ void file_results(double comp_time, int np) {
     exit(1);
   }
 
-  fprintf(fptr, "dijkstra's algorithm\nnumber of nodes: %d\nnumber of threads: %d\ncomputational time: %f\n\n", np, thread_num, comp_time);
+  fprintf(fptr, "dijkstra's algorithm\nnumber of nodes: %d\nnumber of threads: %d\ncomputational time: %f\n\n", np, num_threads, comp_time);
 
   fclose(fptr);
 }
