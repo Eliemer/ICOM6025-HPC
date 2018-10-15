@@ -8,6 +8,7 @@
 void floyd(int n, int **G);
 void gen_adj_matrix(int n, int **G);
 void printSolution(int n, int **D);
+void file_results(double comp_time, int np);
 
 double get_walltime()
 {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     int i,j,n,u;
     double time0, time1;
 
+    omp_set_num_threads(omp_get_max_threads());
     srand(4);
 
     if (argc > 1){
@@ -59,6 +61,8 @@ int main(int argc, char *argv[])
     free(G);
 
     printf("\n\ntime elapsed:  %f\n", time1 - time0);
+
+    file_results(time1 - time0, n);
 
     return 0;
 }
@@ -138,6 +142,29 @@ void printSolution(int n,int **D)
     }
     printf("\n");
   }
+}
+
+void file_results(double comp_time, int np) {
+  int i = 0;
+  int thread_num = 1;
+  if (omp_get_num_threads() > 1){
+    thread_num = omp_get_num_threads();
+  }
+  printf("%d\n", omp_get_num_threads());
+  printf("%d\n", omp_get_max_threads());
+  FILE *fptr;
+  char filename[] = {"floyd_results"};
+  fptr = fopen(filename, "w+");
+
+  if(fptr == NULL)
+  {
+    printf("Error creating or opening file");
+    exit(1);
+  }
+
+  fprintf(fptr, "floyd's algorithm\nnumber of nodes: %d\nnumber of threads: %d\ncomputational time: %f\n\n", np, thread_num, comp_time);
+
+  fclose(fptr);
 }
 
 // void dijkstra(int n, int **G, int startnode)
