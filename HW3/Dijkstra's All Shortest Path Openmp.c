@@ -31,8 +31,10 @@ int main(int argc, char *argv[])
       scanf("%d",&n);
     }
 
-    #pragma omp parallel{
-      #pragma omp master{
+    #pragma omp parallel
+    {
+      #pragma omp master
+      {
         num_threads = omp_get_num_threads();
       }
     }
