@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     double time0, time1;
 
     omp_set_num_threads(omp_get_max_threads());
-    srand(4);
+    srand(get_walltime());
 
     if (argc > 1){
       n = atoi(argv[1]);

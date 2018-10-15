@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     int i,j,n,u = -1;
     double time0, time1;
 
+    srand(get_walltime());
+
     if (argc > 1){
       n = atoi(argv[1]);
     } else {
