@@ -61,6 +61,7 @@ void bitonicSort(int *a, int low, int cnt, int dir){
   }
 }
 
+__global__
 void sort(int *a, int N, int up){
   bitonicSort(a, 0, N, up);
 }
@@ -68,6 +69,7 @@ void sort(int *a, int N, int up){
 int main(int argc, char const *argv[]) {
 
   int *a;
+  int *d_a; // array pointer for gpu device
   int N,k;
   int up =1;
 
@@ -80,6 +82,7 @@ int main(int argc, char const *argv[]) {
 
   N = pow(2, k);
   a = (int*)malloc(sizeof(int)*N);
+  cudaMalloc(&d_a, sizeof(int)*N);
 
   if (argc > 2){
     srand(atoi(argv[2]));
@@ -90,12 +93,19 @@ int main(int argc, char const *argv[]) {
   generate_vector(a, N);
   //generate_bitonic_vector(a, N);
 
-  sort(a, N, up);
+  cudaMemcpy(d_a, a, sizeof(int)*N, cudaMemcpyHostToDevice);
+
+  sort<<<(N+255)/256, 256>>>(a, N, up);// CUDA call
+
+  cudaMemcpy(a, d_a, sizeof(int)*N, cudaMemcpyDeviceToHost);
 
   printf("\nSorted array: \n");
   for (size_t i = 0; i < N; i++) {
     printf("%d ", a[i]);
   }
   printf("\n\n");
+
+  free(a);
+  cudaFree(d_a);
   return 0;
 }
