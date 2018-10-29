@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-//#include <openacc.h>
+#include <openacc.h>
 
 double get_walltime()
 {
@@ -19,20 +19,15 @@ void generate_vector(int* D, int n){
 }
 
 //__global__
-int serial_vector_sum(int *D, int n){
-  int sum = 0;
-  for (size_t i = 0; i < n; i++){
-    sum = sum + D[i];
-  }
-  return sum;
-}
+int serial_vector_sum(int *D, int n, int result){
 
- int cuda_vector_sum(int* D, int n){
-   int sum = 0;
-   for (int i = 0; i < n; i++){
-     sum += D[i];
-   }
- }
+  #pragma acc data copy(result, D)
+  #pragma acc kernels
+  for (size_t i = 0; i < n; i++){
+    result = result + D[i];
+  }
+  return result;
+}
 
 int main(int argc, char const *argv[]) {
 
@@ -46,19 +41,14 @@ int main(int argc, char const *argv[]) {
     n = 100;
   }
 
-  //cudaMallocManaged(&D_gpu, n*sizeof(int));
   D = (int*)malloc(sizeof(int) * n);
 
   srand(get_walltime());
   generate_vector(D, n);
 
-  //#pragma acc data copy(D, )
-  sum = serial_vector_sum(D, n);
+  sum = serial_vector_sum(D, n, sum);
   printf("%d\n", sum);
-  //serial_vector_sum<<<1,1>>>(*D, n, sum);
-
-
-  //cudaFree(D_gpu);
+  
   free(D);
   return 0;
 }
