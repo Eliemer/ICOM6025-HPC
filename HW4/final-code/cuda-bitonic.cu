@@ -42,6 +42,7 @@ void print_array(int *D, int n) {
   }
 }
 
+__global__
 void bitonic_sort_step(int *D, int n, int a, int b){
   int i, ixa, temp;
   i = threadIdx.x + (blockDim.x * blockIdx.x);
@@ -69,24 +70,25 @@ void bitonic_sort_step(int *D, int n, int a, int b){
 
 void bitonic_sort(int *D, int n, int k){
   int a, b;
-  int thread_num=512, block_num=1;
+  int thread_num=512; 
+  int block_num=1;
   int *dev_D;
 
   cudaMalloc((void**) &dev_D, sizeof(int) * n);
   cudaMemcpy(dev_D, D, sizeof(int) * n, cudaMemcpyHostToDevice);
 
 
-  if (threads>n){
-    threads = n;
-    blocks = 1;
+  if (thread_num>n){
+    thread_num = n;
+    block_num = 1;
   } else {
-    while (blocks * threads < n){
-      blocks ++;
+    while (block_num * thread_num < n){
+      block_num ++;
     }
   }
 
-  dim3 blocks(blocks);
-  dim3 threads(threads);
+  dim3 blocks(block_num);
+  dim3 threads(thread_num);
 
   for (b = 2; b <= n; b <<= 1){
     for (a = b>>1; a > 0; a >>= 1){
