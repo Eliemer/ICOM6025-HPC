@@ -17,6 +17,7 @@ void bitonic_convert(int *D, int n, int k);
 void bitonic_recursive(int *D, int a, int b, int k);
 void bitonic_sort(int *D, int n, int k);
 void generate_vector(int *D, int n);
+void compare_and_swap(int a, int b, int dir);
 
 double get_walltime()
 {
@@ -73,32 +74,31 @@ int main(int argc, char const *argv[]) {
   return 0;
 }
 
+void compare_and_swap(int *arr,int a, int b, int dir){
+  if(dir == (arr[a] > arr[b])){
+    int temp = arr[a];
+    arr[a] = arr[b];
+    arr[b] = temp;
+  }
+}
+
 void generate_vector(int *D, int n){
   D = (int*)malloc(sizeof(int)*n);
   for (size_t i = 0; i < n; i++)
     D[i] = rand()%100;
-
 }
 
-void bitonic_convert(int *D, int n, int k){
-
-}
-void bitonic_recursive(int *D, int a, int b, int k){
-  if (k > 3){
-    int temp;
-    for(size_t j = a; j < b; j++){
-      temp = min(D[j], D[b/2 + j]);
-      D[b/2 + j] = max(D[j], D[b/2 + j]);
-      D[j] = temp;
-    }
-    bitonic_recursive(D, 0, b/2, k-1);
-    bitonic_recursive(D, b/2 +1, b, k-1);
-  }
-}
+// void bitonic_convert(int *D, int n, int k){
+//
+// }
 
 void bitonic_sort(int *D, int n, int k){
-  //bitonic_convert(*D, n, k);
+  // bitonic_convert(*D, n, k);
+  // every thread block contains n/(k - 5) of the contents of the array
 
-  bitonic_recursive(D, 0, n, k);
+  // for (size_t i = 0; i < k-5; i++) {
+    // local_sort()
+  // }
+  // compare_and_swap between thread blocks
 
 }
