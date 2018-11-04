@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <math.h>
-#include <openacc.h>
 
 double get_walltime()
 {
@@ -13,14 +12,14 @@ double get_walltime()
 
 void file_results(double time_elapsed, int k) {
   FILE *fptr;
-  fptr = fopen("openacc_times.txt", "w+");
+  fptr = fopen("serial_times.txt", "w+");
 
   if(fptr == NULL){
     printf("\nError creating or opening file\n");
     exit(1);
   }
 
-  fprintf(fptr, "openacc\npower of 2: %d\ntime elapsed: %f\n\n", k, time_elapsed);
+  fprintf(fptr, "serial\npower of 2: %d\ntime elapsed: %f\n\n", k, time_elapsed);
   fclose(fptr);
 }
 
@@ -44,44 +43,59 @@ void print_array(int *D, int n) {
 }
 
 void bitonic_sort_step(int *D, int n, int a, int b){
-  int ixa, temp;
+  int i, ixa, temp;
+  i = threadIdx.x + (blockDim.x * blockIdx.x);
+  ixa = i^a;
 
-  //#pragma acc data copy(ixa, temp)
-  //#pragma acc kernels
-  for (size_t i = 0; i < n; i++){
-    ixa = i^a;
-
-    if (ixa > i){
-      if ((i & b) == 0){
-        if (D[i] > D[ixa]){
-          temp = D[i];
-          D[i] = D[ixa];
-          D[ixa] = temp;
-        }
-      }
-      if ((i & b) != 0){
-        if (D[i] < D[ixa]){
-          temp = D[i];
-          D[i] = D[ixa];
-          D[ixa] = temp;
-        }
+  if (ixa > i){
+    if ((i & b) == 0){
+      if (D[i] > D[ixa]){
+        temp = D[i];
+        D[i] = D[ixa];
+        D[ixa] = temp;
       }
     }
-    //print_array(D, n);
-    //printf("\t\ti: %lu\tixa: %d\ta: %d\tb: %d\n", i, ixa, a, b);
+    if ((i & b) != 0){
+      if (D[i] < D[ixa]){
+        temp = D[i];
+        D[i] = D[ixa];
+        D[ixa] = temp;
+      }
+    }
   }
+    //print_array(D, n);
+    //printf("\t\ti: %d\tixa: %d\ta: %d\tb: %d\n", i, ixa, a, b);
 }
 
 void bitonic_sort(int *D, int n, int k){
   int a, b;
+  int thread_num=512, block_num=1;
+  int *dev_D;
 
-  #pragma acc data copy(D, n, a, b)
-  for (b = 2; b <= n; b <<= 1){
-    for (a = b>>1; a > 0; a >>= 1){
-      #pragma acc kernels
-      bitonic_sort_step(D, n, a, b);
+  cudaMalloc((void**) &dev_D, sizeof(int) * n);
+  cudaMemcpy(dev_D, D, sizeof(int) * n, cudaMemcpyHostToDevice);
+
+
+  if (threads>n){
+    threads = n;
+    blocks = 1;
+  } else {
+    while (blocks * threads < n){
+      blocks ++;
     }
   }
+
+  dim3 blocks(blocks);
+  dim3 threads(threads);
+
+  for (b = 2; b <= n; b <<= 1){
+    for (a = b>>1; a > 0; a >>= 1){
+      bitonic_sort_step<<<blocks, threads>>>(dev_D, n, a, b);
+    }
+  }
+
+  cudaMemcpy(D, dev_D, sizeof(int) * n, cudaMemcpyDeviceToHost);
+  cudaFree(dev_D);
 }
 
 int main(int argc, char const *argv[]) {
@@ -126,7 +140,7 @@ int main(int argc, char const *argv[]) {
       printf("%d ", D[i]);
     }
   }
-  
+
   printf("\n\ntime elapsed: %f s\n\n ", time1 - time0);
 
   free(D);
