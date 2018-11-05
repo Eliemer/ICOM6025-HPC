@@ -68,34 +68,34 @@ void array_fill(int *arr, int length)
 }
 
 
-// __global__ void bitonic_sort_step(int *dev_values, int j, int k)
-// {
-//   unsigned int i, ixj; /* Sorting partners: i and ixj */
-//   i = threadIdx.x + blockDim.x * blockIdx.x; /* Iteration mapping to individual threads */
-//   ixj = i^j;
-//
-//   /* The threads with the lowest ids sort the array. */
-//   if ((ixj)>i) {
-//     if ((i&k)==0) {
-//       /* Sort ascending */
-//       if (dev_values[i]>dev_values[ixj]) {
-//         /* exchange(i,ixj); */
-//         int temp = dev_values[i];
-//         dev_values[i] = dev_values[ixj];
-//         dev_values[ixj] = temp;
-//       }
-//     }
-//     if ((i&k)!=0) {
-//       /* Sort descending */
-//       if (dev_values[i]<dev_values[ixj]) {
-//         /* exchange(i,ixj); */
-//         int temp = dev_values[i];
-//         dev_values[i] = dev_values[ixj];
-//         dev_values[ixj] = temp;
-//       }
-//     }
-//   }
-// }
+ __global__ void bitonic_sort_step(int *dev_values, int j, int k)
+ {
+   unsigned int i, ixj; /* Sorting partners: i and ixj */
+   i = threadIdx.x + blockDim.x * blockIdx.x; /* Iteration mapping to individual threads */
+   ixj = i^j;
+
+   /* The threads with the lowest ids sort the array. */
+   if ((ixj)>i) {
+     if ((i&k)==0) {
+       /* Sort ascending */
+       if (dev_values[i]>dev_values[ixj]) {
+         /* exchange(i,ixj); */
+         int temp = dev_values[i];
+         dev_values[i] = dev_values[ixj];
+         dev_values[ixj] = temp;
+       }
+     }
+     if ((i&k)!=0) {
+       /* Sort descending */
+       if (dev_values[i]<dev_values[ixj]) {
+         /* exchange(i,ixj); */
+         int temp = dev_values[i];
+         dev_values[i] = dev_values[ixj];
+         dev_values[ixj] = temp;
+       }
+     }
+   }
+ }
 
 /**
  * Inplace bitonic sort using CUDA.
@@ -105,22 +105,21 @@ void bitonic_sort(int *values)
   int *dev_values;
   size_t size = NUM_VALS * sizeof(int);
 
-  // cudaMalloc((void**) &dev_values, size);
-  // cudaMemcpy(dev_values, values, size, cudaMemcpyHostToDevice);
-  //
-  // dim3 blocks(BLOCKS,1);    /* Number of blocks   */
-  // dim3 threads(THREADS,1);  /* Number of threads  */
+  cudaMalloc((void**) &dev_values, size);
+  cudaMemcpy(dev_values, values, size, cudaMemcpyHostToDevice);
+
+  dim3 blocks(BLOCKS,1);    /* Number of blocks   */
+  dim3 threads(THREADS,1);  /* Number of threads  */
 
   int j, k;
   /* Major step */
   for (k = 2; k <= NUM_VALS; k<<=1) {
     /* Minor step */
     for (j = k>>1; j > 0; j>>=1) {
-      printf("j: %d\tk: %d\n", j, k);
-      //bitonic_sort_step<<<blocks, threads>>>(dev_values, j, k);
+      bitonic_sort_step<<<blocks, threads>>>(dev_values, j, k);
     }
   }
-//  cudaMemcpy(values, dev_values, size, cudaMemcpyDeviceToHost);
-//  cudaFree(dev_values);
+  cudaMemcpy(values, dev_values, size, cudaMemcpyDeviceToHost);
+  cudaFree(dev_values);
 
 }
