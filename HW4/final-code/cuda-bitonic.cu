@@ -42,6 +42,7 @@ void print_array(int *D, int n) {
   }
 }
 
+__global__
 void bitonic_sort_step(int *D, int n, int a, int b){
   int i, ixa, temp;
   i = threadIdx.x + (blockDim.x * blockIdx.x);
@@ -69,7 +70,8 @@ void bitonic_sort_step(int *D, int n, int a, int b){
 
 void bitonic_sort(int *D, int n, int k){
   int a, b;
-  int thread_num=512, block_num=1;
+  int thread_num=512;
+  int block_num=1;
   int *dev_D;
 
   if (k > 9){
