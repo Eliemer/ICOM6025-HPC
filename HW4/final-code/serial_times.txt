@@ -1,0 +1,84 @@
+serial
+power of 2: 18
+time elapsed: 0.186971
+
+serial
+power of 2: 18
+time elapsed: 0.250715
+
+serial
+power of 2: 18
+time elapsed: 0.246424
+
+serial
+power of 2: 19
+time elapsed: 0.444213
+
+serial
+power of 2: 19
+time elapsed: 0.406479
+
+serial
+power of 2: 19
+time elapsed: 0.457602
+
+serial
+power of 2: 20
+time elapsed: 0.939905
+
+serial
+power of 2: 20
+time elapsed: 0.934234
+
+serial
+power of 2: 20
+time elapsed: 0.946413
+
+serial
+power of 2: 21
+time elapsed: 1.937497
+
+serial
+power of 2: 21
+time elapsed: 1.932292
+
+serial
+power of 2: 21
+time elapsed: 1.923108
+
+serial
+power of 2: 22
+time elapsed: 4.230444
+
+serial
+power of 2: 22
+time elapsed: 4.214434
+
+serial
+power of 2: 22
+time elapsed: 4.250777
+
+serial
+power of 2: 23
+time elapsed: 9.040305
+
+serial
+power of 2: 23
+time elapsed: 9.008368
+
+serial
+power of 2: 23
+time elapsed: 9.008960
+
+serial
+power of 2: 24
+time elapsed: 19.564177
+
+serial
+power of 2: 24
+time elapsed: 19.586414
+
+serial
+power of 2: 24
+time elapsed: 19.645234
+

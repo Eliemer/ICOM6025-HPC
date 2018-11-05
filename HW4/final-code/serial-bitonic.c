@@ -12,7 +12,7 @@ double get_walltime()
 
 void file_results(double time_elapsed, int k) {
   FILE *fptr;
-  fptr = fopen("serial_times.txt", "w+");
+  fptr = fopen("serial_times.txt", "a");
 
   if(fptr == NULL){
     printf("\nError creating or opening file\n");

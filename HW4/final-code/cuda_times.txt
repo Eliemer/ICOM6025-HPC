@@ -1,0 +1,84 @@
+cuda
+power of 2: 18
+time elapsed: 1.846997
+
+cuda
+power of 2: 18
+time elapsed: 1.834428
+
+cuda
+power of 2: 18
+time elapsed: 1.847776
+
+cuda
+power of 2: 19
+time elapsed: 1.999206
+
+cuda
+power of 2: 19
+time elapsed: 1.979751
+
+cuda
+power of 2: 19
+time elapsed: 1.980269
+
+cuda
+power of 2: 20
+time elapsed: 1.977277
+
+cuda
+power of 2: 20
+time elapsed: 1.943451
+
+cuda
+power of 2: 20
+time elapsed: 1.976205
+
+cuda
+power of 2: 21
+time elapsed: 1.957081
+
+cuda
+power of 2: 21
+time elapsed: 1.962898
+
+cuda
+power of 2: 21
+time elapsed: 1.996168
+
+cuda
+power of 2: 22
+time elapsed: 1.990364
+
+cuda
+power of 2: 22
+time elapsed: 1.942762
+
+cuda
+power of 2: 22
+time elapsed: 1.964151
+
+cuda
+power of 2: 23
+time elapsed: 1.975787
+
+cuda
+power of 2: 23
+time elapsed: 1.952444
+
+cuda
+power of 2: 23
+time elapsed: 1.958205
+
+cuda
+power of 2: 24
+time elapsed: 1.875044
+
+cuda
+power of 2: 24
+time elapsed: 1.848324
+
+cuda
+power of 2: 24
+time elapsed: 1.874564
+

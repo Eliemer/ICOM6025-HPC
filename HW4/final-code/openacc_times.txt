@@ -1,0 +1,4 @@
+openacc
+power of 2: 20
+time elapsed: 3.631022
+

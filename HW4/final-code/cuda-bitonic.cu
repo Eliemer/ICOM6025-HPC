@@ -12,7 +12,7 @@ double get_walltime()
 
 void file_results(double time_elapsed, int k) {
   FILE *fptr;
-  fptr = fopen("cuda_times.txt", "w+");
+  fptr = fopen("cuda_times.txt", "a");
 
   if(fptr == NULL){
     printf("\nError creating or opening file\n");
@@ -84,8 +84,8 @@ void bitonic_sort(int *D, int n, int k){
   cudaMalloc((void**) &dev_D, sizeof(int) * n);
   cudaMemcpy(dev_D, D, sizeof(int) * n, cudaMemcpyHostToDevice);
 
-  dim3 blocks(blocks, 1);
-  dim3 threads(threads, 1);
+  dim3 blocks(block_num);
+  dim3 threads(thread_num);
 
   for (b = 2; b <= n; b <<= 1){
     for (a = b>>1; a > 0; a >>= 1){

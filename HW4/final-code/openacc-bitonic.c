@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <math.h>
 #include <openacc.h>
+#include <omp.h>
 
 double get_walltime()
 {
@@ -43,11 +44,10 @@ void print_array(int *D, int n) {
   }
 }
 
-void bitonic_sort_step(int *D, int n, int a, int b){
-  int ixa, temp;
+void bitonic_sort_step(int *D, int n, int a, int b, int ixa, int temp){
 
-  //#pragma acc data copy(ixa, temp)
-  //#pragma acc kernels
+  #pragma acc kernels
+  #pragma omp parallel for private(ixa)
   for (size_t i = 0; i < n; i++){
     ixa = i^a;
 
@@ -73,13 +73,13 @@ void bitonic_sort_step(int *D, int n, int a, int b){
 }
 
 void bitonic_sort(int *D, int n, int k){
-  int a, b;
+  int a, b, ixa, temp;
 
-  #pragma acc data copy(D, n, a, b)
+  #pragma acc data copy(D, n, a, b, ixa, temp)
   for (b = 2; b <= n; b <<= 1){
     for (a = b>>1; a > 0; a >>= 1){
-      #pragma acc kernels
-      bitonic_sort_step(D, n, a, b);
+      //#pragma acc kernels
+      bitonic_sort_step(D, n, a, b, ixa, temp);
     }
   }
 }
