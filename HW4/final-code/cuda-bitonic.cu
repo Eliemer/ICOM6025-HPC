@@ -12,14 +12,14 @@ double get_walltime()
 
 void file_results(double time_elapsed, int k) {
   FILE *fptr;
-  fptr = fopen("serial_times.txt", "w+");
+  fptr = fopen("cuda_times.txt", "w+");
 
   if(fptr == NULL){
     printf("\nError creating or opening file\n");
     exit(1);
   }
 
-  fprintf(fptr, "serial\npower of 2: %d\ntime elapsed: %f\n\n", k, time_elapsed);
+  fprintf(fptr, "cuda\npower of 2: %d\ntime elapsed: %f\n\n", k, time_elapsed);
   fclose(fptr);
 }
 
@@ -141,6 +141,7 @@ int main(int argc, char const *argv[]) {
   }
 
   printf("\n\ntime elapsed: %f s\n\n ", time1 - time0);
+  file_results(time1-time0, k);
 
   free(D);
   return 0;

@@ -126,8 +126,9 @@ int main(int argc, char const *argv[]) {
       printf("%d ", D[i]);
     }
   }
-  
+
   printf("\n\ntime elapsed: %f s\n\n ", time1 - time0);
+  file_results(time1-time0, k);
 
   free(D);
   return 0;
